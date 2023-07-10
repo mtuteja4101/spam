@@ -1,0 +1,5 @@
+.git
+.cache
+media/*
+celerybeat.pid
+celerybeat-schedule
