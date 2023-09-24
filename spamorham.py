@@ -12,7 +12,7 @@ from flask import Flask, request, render_template, jsonify, request, url_for, se
 #from pyngrok import ngrok
 import requests
 import json
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 #from bs4 import BeautifulSoup
 #import threading
 #from datetime import timedelta
@@ -33,9 +33,8 @@ from werkzeug.utils import redirect
 #ngrok.set_auth_token("29qrK5V1DxqT5QhX9qENej1Urzu_2qV94jkdCN8AshUmuCdkn")
 
 
-
 app = Flask(__name__)
-cors = CORS(app)
+CORS(app, support_credentials=True)
 
 API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
 headers = {"Authorization": "Bearer {}".format('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')}
@@ -56,6 +55,7 @@ def query(payload):
 #run_with_ngrok(app)
 
 @app.route("/")
+@cross_origin(supports_credentials=True)
 def index():
   return "<h1>toxic comment /testing/str ,  spam /spamorham/str</h1>"
 
@@ -71,7 +71,7 @@ def betacomment(comment):
 
 
 @app.route("/spamornot/<post>")
-
+@cross_origin(supports_credentials=True)
 def modelspam(post):
 
   #clean_post = []
@@ -80,11 +80,12 @@ def modelspam(post):
     return "scam"
 	
   post_tr = post.lower()
-  post_tr = re.sub('[^a-zA-Z]',' ',post_tr)
+  post_tr = re.sub('[^A-Za-z0–9]','',post_tr)
+  post_tr = re.sub(r'\s{2,}', ' ', post_tr)
 
-  post_tr = ' '.join(i for i in post_tr if i not in stopwords.words('english'))
+  #post_tr = ' '.join(i for i in post_tr if i not in stopwords.words('english'))
 
-  post_tr_cv = cv.transform([post]).toarray()
+  post_tr_cv = cv.transform([post_tr]).toarray()
   prediction = model.predict(post_tr_cv)
 
   if prediction[0] == 1:
