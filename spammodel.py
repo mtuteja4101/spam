@@ -38,7 +38,7 @@ b = messages[messages["label"] == 'spam']
 a = messages[messages["label"] == 'ham']#.iloc[:1000,:]
 
 shuffled_ham = a.sample(frac=1)
-shuffled_ham = shuffled_ham.iloc[:10000,:]
+shuffled_ham = shuffled_ham.iloc[:20000,:]
 dataset_ab = pd.concat([shuffled_ham,b], axis=0)
 shuffled_set = dataset_ab.sample(frac=1)
 shuffled_set.reset_index(inplace=True, drop = True)
